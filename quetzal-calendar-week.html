@@ -43,21 +43,17 @@ Polymer( "quetzal-calendar-week", {
     this._refresh();
   },
 
-  // dayControlForDate: function(date) {
-  //   var dayIndex, days, week;
-  //   days = (function() {
-  //     var _i, _len, _ref, _results;
-  //     _ref = this.segments();
-  //     _results = [];
-  //     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-  //       week = _ref[_i];
-  //       dayIndex = week.daysSinceFirstDayOfWeek(date);
-  //       _results.push(week.days()[dayIndex]);
-  //     }
-  //     return _results;
-  //   }).call(this);
-  //   return $().add(days).control();
-  // },
+  // Return the element showing the given date.
+  dayElementForDate: function( date ) {
+    var midnightOnDate = QuetzalCalendarDay.midnightOnDate( date );
+    if ( midnightOnDate >= this.firstDate && midnightOnDate <= this.lastDate ) {
+      var dayIndex = this.daysSinceFirstDayOfWeek( date );
+      return this.days[ dayIndex ];
+    } else {
+      // Date falls outside week.
+      return null;
+    }
+  },
 
   // The elements for the days in the week, returned as an array.
   get days() {
@@ -83,6 +79,10 @@ Polymer( "quetzal-calendar-week", {
     return ( date.getDay() - this.firstDayOfWeek() + 7 ) % 7;
   },
 
+  get firstDate() {
+    return QuetzalCalendarDay.midnightOnDate( this.days[0].date );
+  },
+
   // Return the date of the first day of the week that contains the given date.
   firstDateOfWeek: function( date ) {
     var d = QuetzalCalendarDay.offsetDateByDays( date, -this.daysSinceFirstDayOfWeek( date ) );
@@ -94,6 +94,10 @@ Polymer( "quetzal-calendar-week", {
   firstDayOfWeek: function() {
     var culture = this.culture;
     return culture ? culture.calendar.firstDay : 0;
+  },
+
+  get lastDate() {
+    return QuetzalCalendarDay.midnightOnDate( this.days[6].date );
   },
 
   ready: function() {
